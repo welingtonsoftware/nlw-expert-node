@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,18 +8,33 @@ datasource db {
 }
 
 model Poll {
-  id String @id @default(uuid())
-  title String
+  id        String   @id @default(uuid())
+  title     String
   createdAt DateTime @default(now())
-  updateAt DateTime @default(now())
+  updateAt  DateTime @default(now())
 
   options PollOption[]
+  votes   Vote[]
 }
 
-model PollOption{
-  id String @id @default(uuid())
-  title String
+model PollOption {
+  id     String @id @default(uuid())
+  title  String
   poolId String
 
-  poll Poll @relation(fields: [poolId], references: [id])
+  poll  Poll   @relation(fields: [poolId], references: [id])
+  votes Vote[]
+}
+
+model Vote {
+  id           Int      @id @default(autoincrement())
+  sessionId    String
+  pollId       String
+  pollOptionId String
+  createdAt    DateTime @default(now())
+
+  pollOption PollOption @relation(fields: [pollOptionId], references: [id])
+  poll       Poll       @relation(fields: [pollId], references: [id])
+
+  @@unique([sessionId, pollId])
 }

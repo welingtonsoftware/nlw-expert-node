@@ -1,6 +1,7 @@
 import z from "zod";
 import { FastifyInstance } from "fastify";
 import { randomUUID } from "crypto";
+import { prisma } from "../../lib/prisma";
 
 export async function voteOnPoll(app: FastifyInstance) {
   app.post('/polls/:pollId/votes', async (request, reply) => {
@@ -29,6 +30,14 @@ export async function voteOnPoll(app: FastifyInstance) {
         });
       }
 
+      await prisma.vote.create({
+        data: {
+          sessionId,
+          pollId,
+          pollOptionId,
+        }
+      })
+      
       return reply.status(201).send({ sessionId });
     } catch (error) {
       console.error(error);
