@@ -1,6 +1,7 @@
 import z from "zod"
 import { prisma } from "../../lib/prisma"
 import { FastifyInstance } from "fastify"
+import { redis } from "../../lib/redis"
 
 
 export async function getPoll(app: FastifyInstance) {
@@ -25,6 +26,11 @@ export async function getPoll(app: FastifyInstance) {
         }
       })
 
+      if (!poll){
+        return reply.status(400).send({ message: 'Poll not found.'})
+      }
+
+    
       return reply.status(201).send({ poll })
       
     } catch (error) {
